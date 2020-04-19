@@ -28,7 +28,8 @@ def display_blocks_and_get_user_input(arena, blocks, title):
         
         image = cv2.rectangle(image, p1, p2, color, -1)
     cv2.imshow(title, image)
-    user_input = cv2.waitKey(33)
+    user_input = cv2.waitKey(10)
     return user_input
         
-        
+def close_all_windows():
+    cv2.destroyAllWindows()

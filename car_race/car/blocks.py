@@ -79,10 +79,11 @@ class Rectangle:
         assert isinstance(other, Rectangle), "Other should be an instance of Rectangle"
         dist_center_x = abs(self._xc - other._xc)
         dist_center_y = abs(self._yc - other._yc)
-        if dist_center_x > self._w + other._w:
+        if dist_center_x > (self._w/2 + other._w/2):
             return False
-        if dist_center_y > self._h + other._h:
+        if dist_center_y > (self._h/2 + other._h/2):
             return False
+
         return True
 
     def contains(self, other):
@@ -113,10 +114,10 @@ class Block(Rectangle):
 
         Also stores meta(dict) to store any information related to block
     """
-    def __init__(self, xc, yc, h, w, meta=None, boundary=None):
+    def __init__(self, xc, yc, w, h, meta=None, boundary=None):
         assert isinstance(boundary, (type(None), Rectangle)),\
             "boundary should be: (None, Rectangle). Provided: {}".format(type(boundary))
-        super().__init__(xc, yc, h, w)
+        super().__init__(xc, yc, w, h)
         self._meta = meta
         self._boundary = boundary
 
@@ -134,21 +135,29 @@ class Block(Rectangle):
         h = bry - tly
         return Block(xc, yc, w, h, meta, boundary)
 
+    @property
+    def meta(self):
+        return self._meta
+
     def move_x(self, delta_x):
         if self._boundary is None:
             self._move_x(delta_x)
         else:
-            new_rectangle = self.new_moved_rectangle(delta_x, 0)
-            if new_rectangle.inside(boundary):
-                self._move_x(delta_x)
+            if delta_x > 0: 
+                delta_x = min(delta_x, self._boundary.right - self.right)
+            elif delta_x < 0:
+                delta_x = max(delta_x, self._boundary.left - self.left)
+            self._move_x(delta_x)
 
     def move_y(self, delta_y):
         if self._boundary is None:
             self._move_y(delta_y)
         else:
-            new_rectangle = self.new_moved_rectangle(delta_y, 0)
-            if new_rectangle.inside(boundary):
-                self._move_y(delta_y)
+            if delta_y > 0:
+                delta_y = min(delta_y, self._boundary.bottom - self.bottom)
+            elif delta_y < 0:
+                delta_y = max(delta_y, self._boundary.top - self.top)
+            self._move_y(delta_y)
         return self
 
     def _move_x(self, delta_x):

@@ -1,8 +1,8 @@
 import random
-from blocks import Rectangle, Block
+from .blocks import Rectangle, Block
 
 class ObstacleManager():
-    def __init__(self, arena, max_obstacles, width, height, step_size, min_dist, max_dist):
+    def __init__(self, arena, max_obstacles, width, height, meta, step_size, min_dist, max_dist):
         """
         Args:
             arena: An instance of Rectangle to represent the boundary of playground.
@@ -12,6 +12,7 @@ class ObstacleManager():
             width: width of obstacle
             height: height of obstacle
         """
+        # print("ObstacleManager: Initializing")
         assert isinstance(arena, Rectangle), "Arena should be instance of Rectangle. Provided of type: {}".format(type(arena))
         
         self._arena = arena
@@ -21,7 +22,9 @@ class ObstacleManager():
         self._max_dist = max_dist
         self._width = width
         self._height = height
+        self._meta = meta
         self._obstacles = []
+        # print("ObstacleManager: Initialized")
 
     @property
     def obstacles(self):
@@ -32,12 +35,15 @@ class ObstacleManager():
             obstacle.move_y(self._step_size)
         
         # If the last object move out of arena, remove it from list of obstacles
-        if len(self._obstacles) > 0 and not self._obstacles[-1].inside(self._arena):
+        if len(self._obstacles) > 0 and (not self._obstacles[-1].is_overlapping(self._arena)):
             self._obstacles = self._obstacles[:-1]
 
         # Add new obstacle if needed
         if self._should_add_new_obstacle():
             self._add_new_obstacle()
+
+    def increment_step_size(self, delta_step_size):
+        self._step_size = self._step_size +  delta_step_size
 
     def overlap_any_obstacle(self, block):
         for obstacle in self._obstacles:
@@ -63,20 +69,27 @@ class ObstacleManager():
         bottom = 1
         top = bottom - self._height
         right = left + self._width
-        obstacle = Block.from_bbox_coordinate(left, top, right, bottom)
+        obstacle = Block.from_bbox_coordinate(left, top, right, bottom, self._meta)
         self._obstacles.insert(0, obstacle)
 
-    
-class Player():
-    def __init__(self, arena, width, height, step_size):
-        bottom = arena.bottom
-        top = arena.bottom - height
-        left = arena.width // 2 - width //2
-        right = left + width
 
-        self._block = Block.from_bbox_coordinate(left, top, right, bottom, boundary=arena)
+class Player(Block):
+    def __init__(self, xc, yc, w, h, step_size, meta=None, boundary=None):
+        super().__init__(xc, yc, w, h, meta, boundary)
         self._step_size = step_size
 
-    def step(self):
-        self._block.move_x(self._step_size)
+    @staticmethod
+    def from_width_height(width, height, step_size, meta=None, boundary=None):
+        xc = boundary.width // 2
+        yc = boundary.height - height/2
+        return Player(xc, yc, width, height, step_size, meta, boundary)
+
+    def step_left(self):
+        # print("Player: Stepping left")
+        self.move_x(-self._step_size)
+        return self
         
+    def step_right(self):
+        # print("Player: Stepping right")
+        self.move_x(self._step_size)
+        return self

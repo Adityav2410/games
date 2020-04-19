@@ -1,0 +1,22 @@
+{
+    "arena_width": 300,
+    "arena_height": 500,
+
+    "max_obstacles": -1,
+    "obstacle_width": 25,
+    "obstacle_height": 50,
+    "obstacle_step_size": 15,
+    "obstacle_move_ms": 33,
+    "obstacle_step_increment": 1,
+    "obstacle_speed_increase_interval_s": 5,
+    "obstacle_min_dist": 100,
+    "obstacle_max_dist": 200,
+    "obstacle_color": [0, 0, 255],
+
+    "player_step_size": 25,
+    "player_color": [255, 0, 0],
+    "left_arrow_key": 81,
+    "right_arrow_key": 83,
+
+    "ui_title": "Car Racing"
+}
