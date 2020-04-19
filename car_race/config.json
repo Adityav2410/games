@@ -6,7 +6,7 @@
     "obstacle_width": 25,
     "obstacle_height": 50,
     "obstacle_step_size": 15,
-    "obstacle_move_ms": 33,
+    "obstacle_move_ms": 25,
     "obstacle_step_increment": 1,
     "obstacle_speed_increase_interval_s": 5,
     "obstacle_min_dist": 100,
